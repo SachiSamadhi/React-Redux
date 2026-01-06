@@ -1,82 +1,87 @@
-/* Page Wrapper */
-.create-page {
+/* Page background */
+.ce-bg {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #f4f6fa;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Card */
-.create-card {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 14px;
-  width: 480px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+/* Card container */
+.ce-card {
+  background: #fff;
+  width: 100%;
+  max-width: 900px;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
 /* Title */
-.create-title {
+.ce-title {
   text-align: center;
-  margin-bottom: 20px;
-  color: #4f46e5;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #333;
 }
 
-/* Form Grid */
-.create-form-grid {
+/* Grid layout */
+.ce-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
-/* Inputs */
-.create-input {
-  padding: 10px;
+/* Form field */
+.ce-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.ce-field label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+.ce-field input,
+.ce-field select {
+  padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.ce-field input:focus,
+.ce-field select:focus {
   outline: none;
-  font-size: 14px;
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74,144,226,0.3);
 }
 
-.create-input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-}
-
-/* Button */
-.create-button {
+/* Submit button */
+.ce-submit {
   grid-column: 1 / -1;
-  padding: 12px;
-  margin-top: 10px;
-  background: #4f46e5;
-  color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+.ce-btn {
+  background: #4a90e2;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 12px 25px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.create-button:hover {
-  background: #4338ca;
-}
-
-/* Success Message */
-.create-success {
-  margin-top: 15px;
-  color: #15803d;
-  background: #dcfce7;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-/* Error Message */
-.create-error {
-  margin-top: 15px;
-  color: #991b1b;
-  background: #fee2e2;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
+.ce-btn:hover {
+  background: #3572c5;
+  transform: translateY(-2px);
 }

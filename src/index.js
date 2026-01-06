@@ -6,8 +6,10 @@ import { Provider } from 'react-redux';
 import { store } from './routes/store';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
+// Create React root
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+// Render App with Redux Provider
 root.render(
   <React.StrictMode>
     <Provider store={store}>
@@ -16,5 +18,5 @@ root.render(
   </React.StrictMode>
 );
 
-// ✅ Register service worker OUTSIDE render
+// ✅ Register service worker for PWA capabilities
 serviceWorkerRegistration.register();

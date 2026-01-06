@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Layouts from './Layouts/Layouts';
-import Home from './Layouts/Home';
-import ReadEmployee from './features/employee/ReadEmployee';
-import CreateEmployee from './features/employee/CreateEmployee';
-import UpdateEmployee from './features/employee/UpdateEmployee';
+
+import Home from './Components/Home'
+import ReadEmployee from './Layouts/ReadEmployee';
+import CreateEmployee from './Layouts/CreateEmployee';
+import UpdateEmployee from './Layouts/UpdateEmployee';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './App.css';
 import logo from './assets/dockyard-logo.png';
+import Layers from './Layers';
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
 
       <div style={{ paddingTop: "90px" }}>
         <Routes>
-          <Route path="/" element={<Layouts />} />
+          <Route path="/" element={<Layers />} />
           <Route index element={<Home />} />
           <Route path="/ReadEmployee" element={<ReadEmployee />} />
           <Route path="/CreateEmployee" element={<CreateEmployee />} />

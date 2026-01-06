@@ -1,181 +1,228 @@
-import React, { useState, useEffect } from "react";
-import { useCreateEmpMutation } from "./EmployeeApiSlice";
+import React, { useState } from "react";
+import {
+  useCreateEmployeeMutation,
+  useGetDepartmentsQuery,
+  useGetLocationsByDepartmentQuery,
+  useGetDesignationsQuery,
+  useGetEducationsQuery,
+  useGetHometownsQuery,
+} from "../services/EmployeeService";
+import "./Createstyles.css";
 
 const CreateEmployee = () => {
-  const [createEmp, { isLoading, isSuccess, isError, error }] = useCreateEmpMutation();
-
   const [formData, setFormData] = useState({
-    Name: "",
-    Address: "",
-    DepartmentId: "",
-    LocationId: "",
-    DesignationId: "",
-    EducationId: "",
+    hed_Employee_Name: "",
+    hhd_Hometown_id: "",
+    hed_Employee_Hometown: "",
+    hed_Phone: "",
+    hed_Email: "",
+    hdd_Department_id: "",
+    hld_location_id: "",
+    hld_Location_Name: "",
+    hdd_Designation_id: "",
+    hdd_Designation_Name: "",
+    hed_Education_id: "",
+    hed_Education_Name: "",
   });
 
-  const [departments, setDepartments] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const [designations, setDesignations] = useState([]);
-  const [educations, setEducations] = useState([]);
+  const { data: departments } = useGetDepartmentsQuery();
+  const { data: designations } = useGetDesignationsQuery();
+  const { data: educations } = useGetEducationsQuery();
+  const { data: hometowns } = useGetHometownsQuery();
+  const { data: locations } = useGetLocationsByDepartmentQuery(
+    formData.hdd_Department_id || undefined
+  );
 
-  // Load dropdowns
-  useEffect(() => {
-    fetch("https://localhost:5001/api/Dropdown/Departments")
-      .then(res => res.json())
-      .then(data => setDepartments(data))
-      .catch(err => console.error(err));
-
-    fetch("https://localhost:5001/api/Dropdown/Educations")
-      .then(res => res.json())
-      .then(data => setEducations(data))
-      .catch(err => console.error(err));
-
-    fetch("https://localhost:5001/api/Dropdown/Designations")
-      .then(res => res.json())
-      .then(data => setDesignations(data))
-      .catch(err => console.error(err));
-  }, []);
-
-  // Load locations when department changes
-  useEffect(() => {
-    setLocations([]); // Clear locations when department changes
-    setFormData(prev => ({ ...prev, LocationId: "" }));
-
-    if (!formData.DepartmentId) return;
-
-    fetch(`https://localhost:5001/api/Dropdown/Locations/${formData.DepartmentId}`)
-      .then(res => res.json())
-      .then(data => setLocations(data))
-      .catch(err => console.error(err));
-  }, [formData.DepartmentId]);
+  const [createEmployee, { isLoading }] = useCreateEmployeeMutation();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Auto-fill names based on selected IDs
+    if (name === "hhd_Hometown_id") {
+      const ht = hometowns?.ResultSet?.find((h) => h.hhd_Hometown_id == value);
+      setFormData((prev) => ({ ...prev, hed_Employee_Hometown: ht?.hhd_Hometown_Name || "" }));
+    }
+
+    if (name === "hdd_Department_id") {
+      setFormData((prev) => ({ ...prev, hld_location_id: "", hld_Location_Name: "" }));
+    }
+
+    if (name === "hld_location_id") {
+      const loc = locations?.ResultSet?.find((l) => l.hld_location_id == value);
+      setFormData((prev) => ({ ...prev, hld_Location_Name: loc?.hld_location_Name || "" }));
+    }
+
+    if (name === "hdd_Designation_id") {
+      const des = designations?.ResultSet?.find((d) => d.hdd_Designation_id == value);
+      setFormData((prev) => ({ ...prev, hdd_Designation_Name: des?.hdd_Designation_Name || "" }));
+    }
+
+    if (name === "hed_Education_id") {
+      const edu = educations?.ResultSet?.find((e) => e.hed_Education_id == value);
+      setFormData((prev) => ({ ...prev, hed_Education_Name: edu?.hed_Education_Name || "" }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    await createEmp({
-      hed_Employee_Name: formData.Name,
-      hed_Employee_Hometown: formData.Address,
-      hdd_Department_id: formData.DepartmentId,
-      hld_location_id: formData.LocationId,
-      hdd_Designation_id: formData.DesignationId,
-      hed_Education_id: formData.EducationId,
-    });
-
-    setFormData({
-      Name: "",
-      Address: "",
-      DepartmentId: "",
-      LocationId: "",
-      DesignationId: "",
-      EducationId: "",
-    });
+    try {
+      await createEmployee(formData).unwrap();
+      alert("Employee created successfully!");
+      setFormData({
+        hed_Employee_Name: "",
+        hhd_Hometown_id: "",
+        hed_Employee_Hometown: "",
+        hed_Phone: "",
+        hed_Email: "",
+        hdd_Department_id: "",
+        hld_location_id: "",
+        hld_Location_Name: "",
+        hdd_Designation_id: "",
+        hdd_Designation_Name: "",
+        hed_Education_id: "",
+        hed_Education_Name: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create employee. Check console.");
+    }
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Add New Employee</h2>
-        <form onSubmit={handleSubmit} style={styles.formGrid}>
-          <input
-            style={styles.input}
-            name="Name"
-            placeholder="Full Name"
-            value={formData.Name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            style={styles.input}
-            name="Address"
-            placeholder="Home Address"
-            value={formData.Address}
-            onChange={handleChange}
-            required
-          />
+    <div className="ce-bg">
+      <div className="ce-card">
+        <h2 className="ce-title">➕ Create New Employee</h2>
 
-          {/* Department */}
-          <select
-            style={styles.input}
-            name="DepartmentId"
-            value={formData.DepartmentId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Department</option>
-            {departments.map(dept => (
-              <option key={dept.hdd_Department_id} value={dept.hdd_Department_id}>
-                {dept.hdd_Department_Name}
-              </option>
-            ))}
-          </select>
+        <form onSubmit={handleSubmit} className="ce-grid">
+          <div className="ce-field">
+            <label>Full Name</label>
+            <input
+              name="hed_Employee_Name"
+              value={formData.hed_Employee_Name}
+              onChange={handleChange}
+              placeholder="Enter full name"
+              required
+            />
+          </div>
 
-          {/* Location */}
-          <select
-            style={styles.input}
-            name="LocationId"
-            value={formData.LocationId}
-            onChange={handleChange}
-            required
-            disabled={!locations.length}
-          >
-            <option value="">Select Location</option>
-            {locations.map(loc => (
-              <option key={loc.hld_location_id} value={loc.hld_location_id}>
-                {loc.hld_location_Name}
-              </option>
-            ))}
-          </select>
+          <div className="ce-field">
+            <label>Hometown</label>
+            <select
+              name="hhd_Hometown_id"
+              value={formData.hhd_Hometown_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Hometown</option>
+              {hometowns?.ResultSet?.map((h) => (
+                <option key={h.hhd_Hometown_id} value={h.hhd_Hometown_id}>
+                  {h.hhd_Hometown_Name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* Designation */}
-          <select
-            style={styles.input}
-            name="DesignationId"
-            value={formData.DesignationId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Designation</option>
-            {designations.map(des => (
-              <option key={des.hdd_Designation_id} value={des.hdd_Designation_id}>
-                {des.hdd_Designation_Name}
-              </option>
-            ))}
-          </select>
+          <div className="ce-field">
+            <label>Phone Number</label>
+            <input
+              name="hed_Phone"
+              value={formData.hed_Phone}
+              onChange={handleChange}
+              placeholder="Enter phone number"
+              required
+            />
+          </div>
 
-          {/* Education */}
-          <select
-            style={styles.input}
-            name="EducationId"
-            value={formData.EducationId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Education</option>
-            {educations.map(edu => (
-              <option key={edu.hed_Education_id} value={edu.hed_Education_id}>
-                {edu.hed_Education_Name}
-              </option>
-            ))}
-          </select>
+          <div className="ce-field">
+            <label>Email</label>
+            <input
+              name="hed_Email"
+              value={formData.hed_Email}
+              onChange={handleChange}
+              placeholder="Enter email"
+              required
+            />
+          </div>
 
-          <button style={styles.button} type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Create Employee"}
-          </button>
+          <div className="ce-field">
+            <label>Department</label>
+            <select
+              name="hdd_Department_id"
+              value={formData.hdd_Department_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Department</option>
+              {departments?.ResultSet?.map((d) => (
+                <option key={d.hdd_Department_id} value={d.hdd_Department_id}>
+                  {d.hdd_Department_Name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ce-field">
+            <label>Location</label>
+            <select
+              name="hld_location_id"
+              value={formData.hld_location_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Location</option>
+              {locations?.ResultSet?.map((l) => (
+                <option key={l.hld_location_id} value={l.hld_location_id}>
+                  {l.hld_location_Name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ce-field">
+            <label>Designation</label>
+            <select
+              name="hdd_Designation_id"
+              value={formData.hdd_Designation_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Designation</option>
+              {designations?.ResultSet?.map((d) => (
+                <option key={d.hdd_Designation_id} value={d.hdd_Designation_id}>
+                  {d.hdd_Designation_Name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ce-field">
+            <label>Education</label>
+            <select
+              name="hed_Education_id"
+              value={formData.hed_Education_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Education</option>
+              {educations?.ResultSet?.map((e) => (
+                <option key={e.hed_Education_id} value={e.hed_Education_id}>
+                  {e.hed_Education_Name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ce-submit">
+            <button type="submit" className="ce-btn" disabled={isLoading}>
+              {isLoading ? "Creating..." : "Create Employee"}
+            </button>
+          </div>
         </form>
-
-        {isSuccess && <p style={styles.success}>Employee Created Successfully!</p>}
-        {isError && <p style={styles.error}>{error?.data?.message || "Error creating employee"}</p>}
       </div>
     </div>
   );
 };
 
 export default CreateEmployee;
-
-
-
-

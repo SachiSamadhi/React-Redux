@@ -1,33 +1,17 @@
-import { useDeleteEmployeeMutation } from "../../services/EmployeeApiSlice";
-import { Link } from "react-router-dom";
+import React from 'react';
 
-const EmployeeRow = ({ emp }) => {
-  const [deleteEmployee] = useDeleteEmployeeMutation();
-
-  const onDelete = async () => {
-    if (window.confirm("Delete this employee?")) {
-      await deleteEmployee(emp.id); // pass id directly
-    }
-  };
-
-  return (
-    <tr>
-      <td>{emp.name}</td>
-      <td>{emp.address}</td>
-      <td>{emp.department}</td>
-      <td>{emp.departmentLocation}</td>
-      <td>{emp.designation}</td>
-      <td>{emp.education}</td>
-      <td>
-        <Link to={`/edit/${emp.id}`}>
-          <button>Edit</button>
-        </Link>
-        <button onClick={onDelete} style={{ marginLeft: 10, color: "red" }}>
-          Delete
-        </button>
-      </td>
-    </tr>
-  );
-};
+const EmployeeRow = ({ emp }) => (
+  <tr>
+    <td>{emp.hed_Employee_Name}</td>
+    <td>{emp.hed_Employee_Hometown}</td>
+    <td>{emp.hdd_Department_Name}</td>
+    <td>{emp.hld_location_Name}</td>
+    <td>{emp.hed_Designation}</td>
+    <td>{emp.hed_Education}</td>
+    <td>{emp.hed_Phone}</td>
+    <td>{emp.hed_Email}</td>
+    
+  </tr>
+);
 
 export default EmployeeRow;

@@ -6,23 +6,26 @@ import {
 
 import EmployeeService from "../services/EmployeeService";
 
+// Redux thunk for creating an employee
 export const createEmployee = (employeeData) => async (dispatch) => {
   try {
     dispatch({ type: EMPLOYEE_CREATE_REQUEST });
 
-    const { data } = await EmployeeService.createEmployee(employeeData);
+    // Call the API
+    const response = await EmployeeService.createEmployee(employeeData);
+
+    // Axios returns response.data
+    const data = response.data;
 
     dispatch({
       type: EMPLOYEE_CREATE_SUCCESS,
-      payload: data,
+      payload: data, // contains StatusCode, Result, etc.
     });
   } catch (error) {
     dispatch({
       type: EMPLOYEE_CREATE_FAIL,
       payload:
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        "Failed to create employee",
+        error.response?.data?.Result || error.message || "Failed to create employee",
     });
   }
 };
